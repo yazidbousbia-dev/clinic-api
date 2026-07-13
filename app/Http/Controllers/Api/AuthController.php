@@ -55,30 +55,31 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+   public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        if (! Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Logged in successfully',
-            'user' => $user,
-            'token' => $token,
-        ]);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
     }
+
+    $user = User::where('email', $request->email)->first();
+
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Logged in successfully',
+        'user' => $user,
+        'token' => $token,
+    ]);
+}
 
     public function logout(Request $request)
     {
