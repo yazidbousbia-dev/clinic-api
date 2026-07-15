@@ -9,6 +9,8 @@ return [
     'allowed_origins' => [
         'https://clinic-dashboard-vert.vercel.app',
         'http://localhost:3000',
+        'http://localhost:60476/',
+    
     ],
  
     // Matches ANY Vercel preview URL for this project, e.g.:
